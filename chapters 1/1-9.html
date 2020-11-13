@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- page 31 选框缩放 -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>选框缩放</title>
+    <style>
+        body {
+            background: #ddd;
+        }
+
+        #canvas {
+            margin: 10px;
+            padding: 10px;
+            background: #fff;
+            border: thin inset #aaa;
+            cursor: crosshair;
+            /*光标类型 十字准星*/
+            padding: 0;
+        }
+
+        #controls {
+            margin: 20px 0px 20px 20px;
+        }
+
+        #rubberbandDiv {
+            position: absolute;
+            border: 3px solid blue;
+            cursor: crosshair;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="controls">
+        <input type="button" id="resetButton" value="Reset">
+    </div>
+    <div id="rubberbandDiv"></div>
+    <canvas id="canvas" width="600" height="300">
+        Canvas not supported
+    </canvas>
+    <script>
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d'); //获取绘图环境变量
+        var rubberbandDiv = document.getElementById('rubberbandDiv');
+        var resetButton = document.getElementById('resetButton');
+        var image = new Image();
+        var mousedown = {};
+        var rubberbandRectangle = {};
+        var dragging = false;
+
+        function rubberbandStart(x, y) {
+            mousedown.x = x;
+            mousedown.y = y;
+            rubberbandRectangle.left = mousedown.x;
+            rubberbandRectangle.top = mousedown.y;
+            moveRubberbandDiv();
+            showRubberbandDiv();
+            dragging = true;
+        }
+
+        function rubberbandStretch(x, y) {
+            rubberbandRectangle.left = x < mousedown.x ? x : mousedown.x;
+            rubberbandRectangle.top = y < mousedown.y ? y : mousedown.y;
+            rubberbandRectangle.width = Math.abs(x - mousedown.x);
+            rubberbandRectangle.height = Math.abs(y - mousedown.y);
+            moveRubberbandDiv();
+            resizeRubberbandDiv();
+        }
+
+        function rubberbandEnd() {
+            var bbox = canvas.getBoundingClientRect();
+
+            try {
+                context.drawImage(canvas,
+                    rubberbandRectangle.left - bbox.left,
+                    rubberbandRectangle.top - bbox.top,
+                    rubberbandRectangle.width,
+                    rubberbandRectangle.height,
+                    0, 0, canvas.width, canvas.height);
+            } catch (e) {
+                console.log(e);
+            }
+            resetRubberbandRectangle();
+
+            rubberbandDiv.style.width = 0;
+            rubberbandDiv.style.height = 0;
+            hideRubberbandDiv();
+            dragging = false;
+        }
+
+        function moveRubberbandDiv() {
+            rubberbandDiv.style.top = rubberbandRectangle.top + 'px';
+            rubberbandDiv.style.left = rubberbandRectangle.left + 'px';
+        }
+
+        function resizeRubberbandDiv() {
+           rubberbandDiv.style.width = rubberbandRectangle.width + 'px';
+           rubberbandDiv.style.height = rubberbandRectangle.height + 'px';
+        }
+
+        function showRubberbandDiv() {
+            rubberbandDiv.style.display = 'inline';
+        }
+
+        function hideRubberbandDiv() {
+            rubberbandDiv.style.display = 'none';
+        }
+
+        function resetRubberbandRectangle() {
+            rubberbandRectangle = {
+                top: 0,
+                left: 0,
+                width: 0,
+                height: 0
+            }
+        }
+
+        canvas.onmousedown = function (e) {
+            console.log('click', dragging)
+            var x = e.clientX;
+            var y = e.clientY;
+            e.preventDefault();
+            rubberbandStart(x, y);
+        };
+
+        window.onmousemove = function (e) {
+            var x = e.clientX;
+            var y = e.clientY;
+            e.preventDefault();
+            if (dragging) {
+                rubberbandStretch(x, y);
+            }
+        }
+
+        window.onmouseup = function (e) {
+            console.log('mouseUp')
+            e.preventDefault();
+            rubberbandEnd();
+        };
+
+        image.onload = function (e) {
+            context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        };
+
+        resetButton.onclick = function (e) {
+            context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+            context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        }
+
+        image.src = 'http://127.0.0.1:8080/1-9.jpg';
+
+        console.log('done')
+    </script>
+    <!-- <script src="./example.js"></script> -->
+</body>
+
+</html>

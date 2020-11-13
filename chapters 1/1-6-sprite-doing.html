@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- page 21 获取绘制表面坐标-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>spritesheet check</title>
+    <style>
+        body {
+            background: #ddd;
+        }
+
+        #canvas {
+            position: absolute;
+            left: 0px;
+            top: 20px;
+            margin: 20px;
+            background: #fff;
+            border: thin inset rgba(100, 150, 230, 0.5);
+        }
+
+        #readout {
+            margin-top: 10px;
+            margin-left: 15px;
+            color: blue;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="readout"></div>
+    <canvas id="canvas" width="500" height="250">
+        Canvas not supported
+    </canvas>
+    <script>
+        console.profile('core html5 animation'); //启动性能分析
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d'); //获取绘图环境变量
+        var readout = document.getElementById('readout');
+        var spritesheet = new Image();
+
+        //坐标转换
+        function windowToCanvas(canvas, x, y) {
+            var bbox = canvas.getBoundingClientRect();
+            return {
+                x: x - bbox.left * (canvas.width / bbox.width),
+                y: y - bbox.top * (canvas.height / bbox.height)
+            };
+        }
+
+        function drawBackground() {
+            var VERTICAL_LINE_SPACING = 12;
+            var i = context.canvas.height;
+
+            context.clearRect(0, 0, canvas.width, canvas.height); //设置范围内透明 （坐标， 宽高）
+            context.stroketStyle = 'lightgray';
+            context.lineWidth = 0.5;
+
+            while (i > VERTICAL_LINE_SPACING * 4) {
+                context.beginPath();
+                context.moveTo(0, i);
+                context.lineTo(context.canvas.width, i);
+                context.stroke();
+                i -= VERTICAL_LINE_SPACING;
+            }
+        }
+
+        function drawSpritesheet() {
+            context.drawImage(spritesheet, 0, 0);
+        }
+
+        function drawGuidelines(x, y) {
+            context.stroketStyle = 'rgba(0, 0, 230, 0.8)';
+            context.lineWidth = 0.5;
+            drawVerticalLine(x);
+            drawHorizontalLine(y);
+        }
+
+        function updateReadout(x, y) {
+            readout.innerText = '(' + x.toFixed(0) + ',' + y.toFixed(0) + ')';
+        }
+
+        //竖线绘制
+        function drawHorizontalLine(y) {
+            context.beginPath(); //绘制画笔起的
+            context.moveTo(0, y + 0.5); //画笔移动到坐标 （起点坐标）
+            context.lineTo(context.canvas.width, y + 0.5); //画笔结束点 (终点坐标)
+            context.stroke(); //绘制
+        }
+
+        //水平线绘制
+        function drawVerticalLine(x) {
+            context.beginPath();
+            context.moveTo(x + 0.5, 0);
+            context.lineTo(x + 0.5, context.canvas.height);
+            context.stroke();
+        }
+
+        canvas.onmousemove = function (e) {
+            var loc = windowToCanvas(canvas, e.clientX, e.clientY);
+
+            // drawBackground();
+            drawSpritesheet();
+            drawGuidelines(loc.x, loc.y);
+            updateReadout(loc.x, loc.y);
+        }
+
+        spritesheet.src = 'http://127.0.0.1:8080/1-6.jpg';
+        spritesheet.onload = function (e) {
+            drawSpritesheet();
+        }
+        drawBackground();
+
+        console.profileEnd();
+    </script>
+    <!-- <script src="./example.js"></script> -->
+</body>
+
+</html>

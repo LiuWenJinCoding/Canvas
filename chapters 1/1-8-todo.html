@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- canvas 上显示html控件  page 25 -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A simple canvas Example</title>
+    <style>
+        body {
+            background: #ddd;
+        }
+
+        #canvas {
+            margin: 10px;
+            padding: 10px;
+            background: #fff;
+            border: thin inset #aaa;
+        }
+
+        #glasspane {
+            position: absolute;
+            left: 50px;
+            top: 50px;
+            padding: 0 20px 10px 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border: thin solid rgba(0, 0, 0, 0.6);
+            color: #eee;
+            font-size: 12px;
+            cursor: pointer;
+            box-shadow: rgba(red, green, blue, 0.5) 5px 5px 20px;
+        }
+
+        #glasspane h2{
+            font-weight: normal;
+        }
+
+        #glasspane .title {
+            font-size: 2em;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas" width="600" height="300">
+        Canvas not supported
+    </canvas>
+    <script>
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d'); //获取绘图环境变量
+        context.font = '38pt Arial';
+        context.fillStyle = 'pink';//填充颜色 || 填充形状
+        context.strokeStyle = 'blue'; //轮廓线颜色 || 轮廓形状
+        context.fillText('Hello Canvas', canvas.width / 2 - 150, canvas.height / 2 + 50); //文本内容 文字填充 位置
+        context.strokeText('Hello Canvas', canvas.width / 2 - 150, canvas.height / 2 + 15); //wen 文字轮廓 位置
+        console.log('done')
+    </script>
+    <!-- <script src="./example.js"></script> -->
+</body>
+
+</html>

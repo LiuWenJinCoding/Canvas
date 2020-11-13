@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- page 24 : 绘制表面的保存与恢复-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A simple canvas Example</title>
+    <style>
+        body {
+            background: #ddd;
+        }
+
+        #canvas {
+            margin: 10px;
+            padding: 10px;
+            background: #fff;
+            border: thin inset #aaa;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas" width="600" height="300">
+        Canvas not supported
+    </canvas>
+    <script>
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d'); //获取绘图环境变量
+
+        function saveDrawingSurface() {
+            var drawingSurfaceImageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        };
+
+        function restoreDrawingSurface() {
+            context.putImageData(drawingSurfaceImageData, 0, 0);
+        };
+
+        canvas.onmousedown = function (e) {
+            saveDrawingSurface();
+        };
+
+        canvas.onmousemove = function (e) {
+            var loc = windowToCanvas(e);
+            if(dragging) {
+                restoreDrawingSurface();
+                if(guideWires) {
+                    drawGuidewires(mousedown.x, mousedown.y);
+                }
+            }
+        };
+
+        canvas.onmouseup = function(e) {
+            //...
+            restoreDrawingSurface();
+        };
+        console.log('done');
+    </script>
+    <!-- <script src="./example.js"></script> -->
+</body>
+
+</html>
